@@ -40,6 +40,17 @@
     <junit.version>4.12</junit.version>
   </properties>
   
+  <distributionManagement>
+    <repository>
+      <id>myMavenRepo.write</id>
+      <url>${myMavenRepo.write.url}</url>
+    </repository>
+    <snapshotRepository>
+      <id>myMavenRepo.write</id>
+      <url>${myMavenRepo.write.url}</url>
+    </snapshotRepository>
+  </distributionManagement>
+  
   <build>
     <finalName>apollo-core</finalName>
   
