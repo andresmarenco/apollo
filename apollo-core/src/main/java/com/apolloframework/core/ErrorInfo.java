@@ -29,7 +29,6 @@ public class ErrorInfo {
      * Default constructor
      */
     public ErrorInfo() {
-//        this.details = new ArrayList<>();
     }
     
     /**
@@ -95,6 +94,7 @@ public class ErrorInfo {
          */
         public Builder(HttpStatus status) {
             this.status = status;
+            this.details = new ArrayList<>();
         }
         
         /**
@@ -103,9 +103,6 @@ public class ErrorInfo {
          * @return Current builder
          */
         public Builder addDetail(String detail) {
-            if(this.details == null)
-                this.details = new ArrayList<>();
-            
             this.details.add(detail);
             return this;
         }
@@ -117,11 +114,7 @@ public class ErrorInfo {
          * @return Current builder
          */
         public Builder addDetail(MessageSource msgSource, String detail) {
-            if(this.details == null)
-                this.details = new ArrayList<>();
-            
-            Locale currentLocale = LocaleContextHolder.getLocale();
-            this.details.add(msgSource.getMessage(detail, null, currentLocale));
+            this.addLocalizedDetail(msgSource, detail);
             return this;
         }
         
@@ -138,15 +131,52 @@ public class ErrorInfo {
         }
         
         /**
+         * Adds a list of validation errors to the details of the message
+         * @param msgSource the message source to localize the detail
+         * @param validationErrors the list of validation errors
+         * @return Current builder
+         */
+        public Builder addDetail(MessageSource msgSource, List<FieldError> validationErrors) {
+            for(FieldError error : validationErrors) {
+                this.addLocalizedDetail(msgSource, error.getDefaultMessage());
+            }
+            return this;
+        }
+        
+        /**
          * Adds a detail message to the error info
          * @param cause Exception with the message
          * @return Current builder
          */
-        public Builder withDetail(Throwable cause) {
+        public Builder addDetail(Throwable cause) {
             if(cause != null)
                 this.details.add(cause.getMessage());
             
             return this;
+        }
+        
+        /**
+         * Adds a detail message to the error info
+         * @param msgSource the message source to localize the detail
+         * @param cause Exception with the message
+         * @return Current builder
+         */
+        public Builder addDetail(MessageSource msgSource, Throwable cause) {
+            if(cause != null)
+                this.addLocalizedDetail(msgSource, cause.getMessage());
+            
+            return this;
+        }
+        
+        
+        /**
+         * Adds a message using the current localization
+         * @param msgSource the message bundle source
+         * @param detail the detail to add
+         */
+        private void addLocalizedDetail(MessageSource msgSource, String detail) {
+            Locale currentLocale = LocaleContextHolder.getLocale();
+            this.details.add(msgSource.getMessage(detail, null, detail, currentLocale));
         }
         
         
@@ -157,7 +187,9 @@ public class ErrorInfo {
         public ErrorInfo build() {
             ErrorInfo result = new ErrorInfo();
             result.status = this.status;
-            result.details = this.details;
+            
+            if(this.details != null && !this.details.isEmpty())
+                result.details = this.details;
             
             return result;
         }
