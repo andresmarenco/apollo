@@ -25,6 +25,16 @@ public class BooleanFilterCriteria implements FilterCriteria {
         this.filters = new ArrayList<>(Arrays.asList(filters));
     }
     
+    /**
+     * Default constructor
+     * @param operator the operator to join the filters
+     * @param filters the filters
+     */
+    public BooleanFilterCriteria(BooleanOperator operator, List<FilterCriteria> filters) {
+        this.operator = operator;
+        this.filters = filters;
+    }
+    
     
     /**
      * Adds a filter in the boolean criteria

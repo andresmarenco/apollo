@@ -1,6 +1,7 @@
 package com.apolloframework.query;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.persistence.criteria.Predicate.BooleanOperator;
 
@@ -22,11 +23,33 @@ public abstract class Filters {
     
     /**
      * Creates a {@link BooleanFilterCriteria} with the current criteria using
+     * a {@link BooleanOperator#AND} operator
+     * @param filters the filters to join
+     * @return the boolean filter
+     */
+    public static BooleanFilterCriteria and(List<FilterCriteria> filters) {
+        return new BooleanFilterCriteria(BooleanOperator.AND, filters);
+    }
+    
+    
+    /**
+     * Creates a {@link BooleanFilterCriteria} with the current criteria using
      * a {@link BooleanOperator#OR} operator
      * @param filters the filters to join
      * @return the boolean filter
      */
     public static BooleanFilterCriteria or(FilterCriteria... filters) {
+        return new BooleanFilterCriteria(BooleanOperator.OR, filters);
+    }
+    
+    
+    /**
+     * Creates a {@link BooleanFilterCriteria} with the current criteria using
+     * a {@link BooleanOperator#OR} operator
+     * @param filters the filters to join
+     * @return the boolean filter
+     */
+    public static BooleanFilterCriteria or(List<FilterCriteria> filters) {
         return new BooleanFilterCriteria(BooleanOperator.OR, filters);
     }
     

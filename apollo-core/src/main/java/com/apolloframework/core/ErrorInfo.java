@@ -119,6 +119,18 @@ public class ErrorInfo {
         }
         
         /**
+         * Adds a detail message to the error info
+         * @param msgSource the message source to localize the detail
+         * @param detail the detail message of the error
+         * @param args the arguments for the message
+         * @return Current builder
+         */
+        public Builder addDetail(MessageSource msgSource, String detail, Object... args) {
+            this.addLocalizedDetail(msgSource, detail, args);
+            return this;
+        }
+        
+        /**
          * Adds a list of validation errors to the details of the message
          * @param validationErrors the list of validation errors
          * @return Current builder
@@ -173,10 +185,20 @@ public class ErrorInfo {
          * Adds a message using the current localization
          * @param msgSource the message bundle source
          * @param detail the detail to add
+         * @param args the arguments for the message
          */
-        private void addLocalizedDetail(MessageSource msgSource, String detail) {
+        private void addLocalizedDetail(MessageSource msgSource, String detail, Object... args) {
             Locale currentLocale = LocaleContextHolder.getLocale();
-            this.details.add(msgSource.getMessage(detail, null, detail, currentLocale));
+            this.details.add(msgSource.getMessage(detail, args, detail, currentLocale));
+        }
+        
+        
+        /**
+         * Checks if no errors has been added to the builder
+         * @return <code>true</code> if no errors has been added
+         */
+        public boolean noErrors() {
+            return this.details.isEmpty();
         }
         
         
