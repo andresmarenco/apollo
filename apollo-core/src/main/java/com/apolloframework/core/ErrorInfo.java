@@ -11,7 +11,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -135,9 +135,9 @@ public class ErrorInfo {
          * @param validationErrors the list of validation errors
          * @return Current builder
          */
-        public Builder addDetail(List<FieldError> validationErrors) {
-            for(FieldError error : validationErrors) {
-                this.details.add(error.getDefaultMessage());
+        public Builder addDetail(List<ObjectError> validationErrors) {
+            for(ObjectError error : validationErrors) {
+                this.details.add(error.getCode());
             }
             return this;
         }
@@ -148,9 +148,9 @@ public class ErrorInfo {
          * @param validationErrors the list of validation errors
          * @return Current builder
          */
-        public Builder addDetail(MessageSource msgSource, List<FieldError> validationErrors) {
-            for(FieldError error : validationErrors) {
-                this.addLocalizedDetail(msgSource, error.getDefaultMessage());
+        public Builder addDetail(MessageSource msgSource, List<ObjectError> validationErrors) {
+            for(ObjectError error : validationErrors) {
+                this.addLocalizedDetail(msgSource, error.getCode(), error.getArguments());
             }
             return this;
         }
