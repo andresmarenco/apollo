@@ -31,7 +31,7 @@ public class UnaryFilterCriteria extends BaseFilterCriteria {
     
     
     @Override
-    public Predicate convertToPredicate(CriteriaBuilder criteriaBuilder, PathResolver pathResolver) {
+    public Predicate toPredicate(CriteriaBuilder criteriaBuilder, PathResolver pathResolver) {
         Predicate predicate = null;
         Path<?> path = pathResolver.findPath(this);
         

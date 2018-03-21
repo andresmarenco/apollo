@@ -49,7 +49,7 @@ public class BaseFilterCriteria implements FilterCriteria {
     
     
     @Override
-    public Predicate convertToPredicate(CriteriaBuilder criteriaBuilder, PathResolver pathResolver) {
+    public Predicate toPredicate(CriteriaBuilder criteriaBuilder, PathResolver pathResolver) {
         Predicate predicate = null;
         Path<?> path = pathResolver.findPath(this);
         
@@ -63,4 +63,10 @@ public class BaseFilterCriteria implements FilterCriteria {
         
         return predicate;
     }
+
+
+	@Override
+	public FilterBuilder toBuilder() {
+		return new FilterBuilder(this);
+	}
 }

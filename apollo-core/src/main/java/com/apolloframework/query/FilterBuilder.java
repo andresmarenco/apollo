@@ -102,7 +102,7 @@ public class FilterBuilder {
      * @return the {@link Predicate} object
      */
     public Predicate convertToPredicate(CriteriaBuilder criteriaBuilder, Root<?> root) {
-        return filter.convertToPredicate(criteriaBuilder, new PathResolver(root));
+        return filter.toPredicate(criteriaBuilder, new PathResolver(root));
     }
     
     

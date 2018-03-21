@@ -28,6 +28,7 @@ public class AuthUser extends User {
      * Construct the <code>User</code> with the details required by
      * {@link org.springframework.security.authentication.dao.DaoAuthenticationProvider}.
      *
+     * @param id the user's id
      * @param username the username presented to the
      * <code>DaoAuthenticationProvider</code>
      * @param password the password that should be presented to the

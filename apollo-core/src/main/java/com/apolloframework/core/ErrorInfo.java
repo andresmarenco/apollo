@@ -1,64 +1,80 @@
 package com.apolloframework.core;
 
+import java.io.IOException;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map.Entry;
 
 import org.joda.time.LocalDateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.ObjectError;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Error message to return as the REST response
- *
+ * @author amarenco
+ * 
  */
 public class ErrorInfo {
+	/** HTTP status of the REST response */
     private HttpStatus status;
-    private List<String> details;
+    /** The details of the response */
+    private List<ErrorBlock> details;
+    /** The timestamp of the current error object */
+    private LocalDateTime timestamp;
+    
     
     /**
      * Default constructor
      */
-    public ErrorInfo() {
+    private ErrorInfo() {
+    	this.details = new ArrayList<>();
+    	this.timestamp = LocalDateTime.now();
     }
     
+    
     /**
-     * @return the status
+     * @return the HTTP status of the REST response
      */
     public int getStatus() {
         return status.value();
     }
     
+    
     /**
-     * @param status the status to set
+     * @param status the HTTP status to set for the REST response
      */
     public void setStatus(HttpStatus status) {
         this.status = status;
     }
     
+    
     /**
-     * @return the details
+     * @return the details of the response
      */
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    public List<String> getDetails() {
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    public List<ErrorBlock> getDetails() {
         return details;
     }
+    
     
     /**
      * @param details the details to set
      */
-    public void setDetails(List<String> details) {
+    public void setDetails(List<ErrorBlock> details) {
         this.details = details;
     }
+    
     
     /**
      * @return the reason phrase of the HTTP status
@@ -67,13 +83,73 @@ public class ErrorInfo {
         return status.getReasonPhrase();
     }
     
+    
     /**
-     * Current timestamp
-     * @return Current timestamp
+     * @return the current timestamp
      */
     public String getTimestamp() {
-        return LocalDateTime.now().toString();
+        return this.timestamp.toString();
     }
+    
+    
+    
+    /**
+     * Defines the data for every error detail
+     * @author amarenco
+     *
+     */
+    public static final class ErrorBlock {
+    	/** Error code */
+    	private Integer code;
+    	/** Human-readable error message */
+    	private String message;
+    	
+    	
+    	/**
+    	 * Default constructor
+    	 */
+    	public ErrorBlock() {
+    	}
+    	
+    	
+    	/**
+    	 * Constructor with all fields
+    	 * @param code the error code
+    	 * @param message human-readable error message
+    	 */
+    	public ErrorBlock(int code, String message) {
+    		this.code = code;
+    		this.message = message;
+		}
+
+
+		/**
+		 * @return the error code, or <code>null</code> if it has not been defined
+		 */
+    	@JsonInclude(JsonInclude.Include.NON_NULL)
+		public Integer getCode() {
+			return code;
+		}
+    	
+    	
+    	/**
+    	 * @return <code>true</code> if an error code has been set
+    	 */
+    	@JsonIgnore
+    	public boolean hasCode() {
+    		return this.code != null;
+    	}
+
+
+		/**
+		 * @return the human-readable error message
+		 */
+    	@JsonInclude(JsonInclude.Include.NON_NULL)
+		public String getMessage() {
+			return message;
+		}
+    }
+    
     
      
     /**
@@ -82,11 +158,10 @@ public class ErrorInfo {
      *
      */
     public static final class Builder {
-        
-        private static Logger log = LoggerFactory.getLogger(Builder.class);
-        
         private HttpStatus status;
-        private List<String> details;
+        private List<Entry<ErrorBlock, Object[]>> details;
+        private MessageSource msgSource;
+        
         
         /**
          * Default Constructor
@@ -97,99 +172,98 @@ public class ErrorInfo {
             this.details = new ArrayList<>();
         }
         
+        
         /**
-         * Adds a detail message to the error info
-         * @param detail Detail message of the error
-         * @return Current builder
+         * Sets the default i18n message source for the error details
+         * @param msgSource the i18n message source
+         * @return the current builder
          */
-        public Builder addDetail(String detail) {
-            this.details.add(detail);
-            return this;
+        public Builder setMessageSource(MessageSource msgSource) {
+        	this.msgSource = msgSource;
+        	return this;
         }
+        
         
         /**
          * Adds a detail message to the error info
-         * @param msgSource the message source to localize the detail
-         * @param detail the detail message of the error
-         * @return Current builder
-         */
-        public Builder addDetail(MessageSource msgSource, String detail) {
-            this.addLocalizedDetail(msgSource, detail);
-            return this;
-        }
-        
-        /**
-         * Adds a detail message to the error info
-         * @param msgSource the message source to localize the detail
          * @param detail the detail message of the error
          * @param args the arguments for the message
-         * @return Current builder
+         * @return the current builder
          */
-        public Builder addDetail(MessageSource msgSource, String detail, Object... args) {
-            this.addLocalizedDetail(msgSource, detail, args);
+        public Builder addDetail(String detail, Object... args) {
+        	ErrorBlock error = new ErrorBlock();
+        	error.message = detail;
+        	
+            this.details.add(new AbstractMap.SimpleImmutableEntry<ErrorBlock, Object[]>(error, args));
             return this;
         }
+        
+        
+        /**
+         * Adds a detail message to the error info
+         * @param code the code of the error
+         * @param detail the detail message of the error
+         * @param args the arguments for the message
+         * @return the current builder
+         */
+        public Builder addDetail(int code, String detail, Object... args) {
+        	this.details.add(new AbstractMap.SimpleImmutableEntry<ErrorBlock, Object[]>(
+        			new ErrorBlock(code, detail), args));
+            return this;
+        }
+        
         
         /**
          * Adds a list of validation errors to the details of the message
          * @param validationErrors the list of validation errors
-         * @return Current builder
+         * @return the current builder
          */
         public Builder addDetail(List<ObjectError> validationErrors) {
             for(ObjectError error : validationErrors) {
-                this.details.add(error.getCode());
+                this.addDetail(error.getCode(), error.getArguments());
             }
             return this;
         }
+        
         
         /**
          * Adds a list of validation errors to the details of the message
-         * @param msgSource the message source to localize the detail
+         * @param code the code for all the validation errors
          * @param validationErrors the list of validation errors
-         * @return Current builder
+         * @return the current builder
          */
-        public Builder addDetail(MessageSource msgSource, List<ObjectError> validationErrors) {
+        public Builder addDetail(int code, List<ObjectError> validationErrors) {
             for(ObjectError error : validationErrors) {
-                this.addLocalizedDetail(msgSource, error.getCode(), error.getArguments());
+                this.addDetail(code, error.getCode(), error.getArguments());
             }
             return this;
         }
         
+        
         /**
          * Adds a detail message to the error info
-         * @param cause Exception with the message
-         * @return Current builder
+         * @param cause the throwable with the message
+         * @return the current builder
          */
         public Builder addDetail(Throwable cause) {
             if(cause != null)
-                this.details.add(cause.getMessage());
+                this.addDetail(cause.getMessage());
             
             return this;
         }
+        
         
         /**
          * Adds a detail message to the error info
-         * @param msgSource the message source to localize the detail
-         * @param cause Exception with the message
-         * @return Current builder
+         * @param code the code for all the validation errors
+         * @param cause the throwable with the message
+         * @return the current builder
          */
-        public Builder addDetail(MessageSource msgSource, Throwable cause) {
+        public Builder addDetail(int code, Throwable cause) {
             if(cause != null)
-                this.addLocalizedDetail(msgSource, cause.getMessage());
+                this.addDetail(code, cause.getMessage());
             
             return this;
-        }
-        
-        
-        /**
-         * Adds a message using the current localization
-         * @param msgSource the message bundle source
-         * @param detail the detail to add
-         * @param args the arguments for the message
-         */
-        private void addLocalizedDetail(MessageSource msgSource, String detail, Object... args) {
-            Locale currentLocale = LocaleContextHolder.getLocale();
-            this.details.add(msgSource.getMessage(detail, args, detail, currentLocale));
         }
         
         
@@ -207,11 +281,28 @@ public class ErrorInfo {
          * @return {@link ErrorInfo} object
          */
         public ErrorInfo build() {
-            ErrorInfo result = new ErrorInfo();
-            result.status = this.status;
+        	ErrorInfo result = new ErrorInfo();
+            Locale currentLocale = LocaleContextHolder.getLocale();
+        	
+        	// If no message source has been defined, use a default implementation 
+        	if(msgSource == null) {
+        		msgSource = new ResourceBundleMessageSource();
+        	}
+        	
+        	
+        	// Set the data as defined in the builder
+        	result.status = this.status;
             
-            if(this.details != null && !this.details.isEmpty())
-                result.details = this.details;
+            for(Entry<ErrorBlock, Object[]> error : this.details) {
+            	// Use the message source and the arguments to localize the message
+            	error.getKey().message = msgSource.getMessage(
+            			error.getKey().message,
+            			error.getValue(),
+            			error.getKey().message,
+            			currentLocale);
+            	
+            	result.details.add(error.getKey());
+            }
             
             return result;
         }
@@ -222,7 +313,7 @@ public class ErrorInfo {
          * Creates a JSON representation of the error info message
          * @return JSON error message
          */
-        public String buildJSON() {
+        public String buildJSON() throws IOException {
             ObjectMapper mapper = new ObjectMapper();
             ErrorInfo errorInfo = this.build();
             String json = "";
@@ -231,7 +322,7 @@ public class ErrorInfo {
             {
                 json = mapper.writeValueAsString(errorInfo);
             } catch (JsonProcessingException ex) {
-                log.error("Couldn't convert error message to JSON", ex);
+            	throw new IOException("Couldn't convert error message to JSON", ex);
             }
             
             return json;
@@ -244,7 +335,7 @@ public class ErrorInfo {
          */
         public ResponseEntity<ErrorInfo> buildResponse() {
             ErrorInfo errorInfo = this.build();
-            return new ResponseEntity<ErrorInfo>(errorInfo, this.status);
+            return new ResponseEntity<ErrorInfo>(errorInfo, errorInfo.status);
         }
     }
 }

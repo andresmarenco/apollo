@@ -12,5 +12,11 @@ public interface FilterCriteria {
      * @param pathResolver the delegate to resolve paths
      * @return the {@link Predicate} object
      */
-    Predicate convertToPredicate(CriteriaBuilder criteriaBuilder, PathResolver pathResolver);
+    Predicate toPredicate(CriteriaBuilder criteriaBuilder, PathResolver pathResolver);
+    
+    /**
+     * Creates a {@link FilterBuilder} based on the current criteria
+     * @return a new instance of the filter builder
+     */
+    FilterBuilder toBuilder();
 }

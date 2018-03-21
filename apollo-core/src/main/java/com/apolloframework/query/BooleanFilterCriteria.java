@@ -58,16 +58,21 @@ public class BooleanFilterCriteria implements FilterCriteria {
 
 
     @Override
-    public Predicate convertToPredicate(CriteriaBuilder criteriaBuilder, PathResolver pathResolver) {
+    public Predicate toPredicate(CriteriaBuilder criteriaBuilder, PathResolver pathResolver) {
         List<Predicate> innerPredicates = new ArrayList<>();
         for(FilterCriteria filter : filters) {
-            innerPredicates.add(filter.convertToPredicate(criteriaBuilder, pathResolver));
+            innerPredicates.add(filter.toPredicate(criteriaBuilder, pathResolver));
         }
         
         return (this.operator == BooleanOperator.AND) ?
                 criteriaBuilder.and(innerPredicates.toArray(new Predicate[0])) :
                     criteriaBuilder.or(innerPredicates.toArray(new Predicate[0]));
     }
+
+	@Override
+	public FilterBuilder toBuilder() {
+		return new FilterBuilder(this);
+	}
     
     
 //    private Filter[] filters;

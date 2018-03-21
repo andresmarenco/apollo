@@ -39,9 +39,9 @@ public abstract class AbstractJwtUtils {
     
     
     /**
-     * Determines if a token is expired
+     * Determines if a token is valid
      * @param token the token to validate
-     * @return <code>true</code> if the token is expired
+     * @return <code>true</code> if the token is valid
      */
     public boolean isTokenValid(String token) {
         boolean valid = true;
@@ -114,7 +114,7 @@ public abstract class AbstractJwtUtils {
      * @param token the JWT to parse
      * @return {@link Claims} object extracted from the token
      */
-    private Claims parseClaims(String token) {
+    protected Claims parseClaims(String token) {
         return Jwts.parser()
                 .setSigningKey(this.secretKey)
                 .parseClaimsJws(token)
