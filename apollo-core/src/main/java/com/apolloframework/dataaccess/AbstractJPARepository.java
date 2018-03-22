@@ -24,6 +24,14 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import com.apolloframework.query.FilterBuilder;
 import com.apolloframework.query.Filters;
 
+/**
+ * Extension of {@link PagingAndSortingRepository} to provide integration with JPA.
+ * Also implements methods to use with the {@link FilterBuilder} (as defined in the query package)
+ * @author amarenco
+ *
+ * @param <T> the type of data of the repository
+ * @param <ID> the type of the ID of each record in the repository
+ */
 public abstract class AbstractJPARepository<T, ID extends Serializable> implements PagingAndSortingRepository<T, ID> {
 
     /** The generic type T used for the current repository */

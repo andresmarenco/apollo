@@ -1,15 +1,18 @@
 package com.apolloframework.query;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-
-import com.apolloframework.query.FilterBuilder.PathResolver;
-
-public class BaseFilterCriteria implements FilterCriteria {
+/**
+ * Base implementation of {@link FilterCriteria} with a field and an operation to be applied
+ * @author amarenco
+ *
+ */
+public abstract class BaseFilterCriteria implements FilterCriteria {
+    /** The name of the foreign entity needed to apply the filter */
     protected String joinName;
+    /** The name of the field in where the filter is applied */
     protected String fieldName;
+    /** The operation applied to create the filter */
     protected FilterOperation operation;
+    
     
     /**
      * Default constructor
@@ -25,7 +28,7 @@ public class BaseFilterCriteria implements FilterCriteria {
 
 
     /**
-     * @return the joinName
+     * @return the name of the foreign entity needed to apply the filter
      */
     public String getJoinName() {
         return joinName;
@@ -33,7 +36,7 @@ public class BaseFilterCriteria implements FilterCriteria {
 
 
     /**
-     * @return the fieldName
+     * @return the name of the field in where the filter is applied
      */
     public String getFieldName() {
         return fieldName;
@@ -41,32 +44,16 @@ public class BaseFilterCriteria implements FilterCriteria {
 
 
     /**
-     * @return the operation
+     * @return the operation applied to create the filter
      */
     public FilterOperation getOperation() {
         return operation;
     }
     
-    
+
     @Override
-    public Predicate toPredicate(CriteriaBuilder criteriaBuilder, PathResolver pathResolver) {
-        Predicate predicate = null;
-        Path<?> path = pathResolver.findPath(this);
-        
-        if(this.operation.equals(FilterOperation.NULL)) {
-            predicate = criteriaBuilder.isNull(path);
-        } else if(this.operation.equals(FilterOperation.NOT_NULL)) {
-            predicate = criteriaBuilder.isNotNull(path);
-        } else {
-            throw new IllegalArgumentException("Incorrect filter operation");
-        }
-        
-        return predicate;
+    public FilterBuilder toBuilder() {
+        return new FilterBuilder(this);
     }
 
-
-	@Override
-	public FilterBuilder toBuilder() {
-		return new FilterBuilder(this);
-	}
 }

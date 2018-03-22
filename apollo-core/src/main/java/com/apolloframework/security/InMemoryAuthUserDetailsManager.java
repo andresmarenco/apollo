@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,8 +11,6 @@ import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.util.Assert;
 
 public class InMemoryAuthUserDetailsManager implements UserDetailsManager {
-    protected final Log logger = LogFactory.getLog(getClass());
-
     private final Map<String, UserDetails> users = new HashMap<String, UserDetails>();
     
     /**

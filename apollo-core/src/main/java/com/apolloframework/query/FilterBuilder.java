@@ -13,8 +13,8 @@ import javax.persistence.criteria.Root;
 import org.apache.commons.lang3.StringUtils;
 
 public class FilterBuilder {
-    private Map<String, JoinType> joinMap;
-    private FilterCriteria filter;
+    protected Map<String, JoinType> joinMap;
+    protected FilterCriteria filter;
     
     /**
      * Default constructor

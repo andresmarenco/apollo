@@ -13,6 +13,11 @@ import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.usertype.UserType;
 import org.joda.time.LocalDateTime;
 
+/**
+ * Hibernate {@link UserType} for Joda {@link LocalDateTime} objects
+ * @author amarenco
+ *
+ */
 public class LocalDateTimeType implements UserType {
 
     @Override
