@@ -4,13 +4,13 @@ import java.io.Serializable;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
@@ -38,9 +38,11 @@ public abstract class AbstractJPARepository<T, ID extends Serializable> implemen
     protected final Class<T> repositoryType;
 
     /** The entity manager factory */
+    @Autowired
     protected EntityManagerFactory entityManagerFactory;
     
     /** The conversion service */
+    @Autowired
     protected ConversionService conversionService;
 
     
@@ -172,7 +174,7 @@ public abstract class AbstractJPARepository<T, ID extends Serializable> implemen
 
     /**
      * Returns a {@link Page} of entities meeting the given filters and the paging restriction provided in the {@code Pageable} object.
-     * @param pageRequest the definition of the page
+     * @param pageRequest the definition of the page or <code>null</code> for no pagination
      * @param filters the filters to apply
      * @return a page of entities
      */
@@ -253,19 +255,11 @@ public abstract class AbstractJPARepository<T, ID extends Serializable> implemen
     
     @Override
     public T findOne(ID id) {
-        T result = null;
+        T result;
         
         try(CloseableEntityManager entityManager = createEntityManager())
         {
-            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-            CriteriaQuery<T> cq = criteriaBuilder.createQuery(repositoryType);
-            Root<T> root = cq.from(repositoryType);
-            cq.where(criteriaBuilder.equal(root.get("id"), id));
-            
-            result = entityManager.createQuery(cq).getSingleResult();
-        }
-        catch(NoResultException ex) {
-            result = null;
+            result = entityManager.find(repositoryType, id);
         }
         
         return result;
