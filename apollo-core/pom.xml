@@ -31,6 +31,9 @@
     <!-- Joda Time -->
     <jodaTime.version>2.9.4</jodaTime.version>
     
+    <!-- Scheduling -->
+    <quartz.version>2.3.0</quartz.version>
+    
     <!-- JSON -->
     <jackson.version>2.8.3</jackson.version>
     
@@ -104,6 +107,13 @@
       <scope>provided</scope>
     </dependency>
     
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context-support</artifactId>
+      <version>${spring.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    
     
     <!-- Hibernate/Persistence -->
     <dependency>
@@ -135,6 +145,15 @@
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
       <version>${jodaTime.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+
+    <!-- Scheduling -->
+    <dependency>
+      <groupId>org.quartz-scheduler</groupId>
+      <artifactId>quartz</artifactId>
+      <version>${quartz.version}</version>
       <scope>provided</scope>
     </dependency>
     

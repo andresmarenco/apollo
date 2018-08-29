@@ -1,8 +1,8 @@
-package com.apolloframework.serialization;
+package com.apolloframework.serialization.json;
 
 import java.io.IOException;
 
-import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
@@ -15,24 +15,24 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
 /**
- * Provides the {@link JsonSerializer} and {@link JsonDeserializer} for {@link LocalDate}
+ * Provides the {@link JsonSerializer} and {@link JsonDeserializer} for {@link LocalDateTime}
  * objects using the {@link ISODateTimeFormat} formatter
  * @author amarenco
  *
  */
-public class JsonJodaISODate {
+public class JsonJodaISODateTime {
     
     /** Default formatter for serialization/deserialization */
-    private static final DateTimeFormatter FORMATTER = ISODateTimeFormat.date();
+    private static final DateTimeFormatter FORMATTER = ISODateTimeFormat.dateTime();
     
     /**
-     * Implements the {@link JsonSerializer} for {@link LocalDate} objects
+     * Implements the {@link JsonSerializer} for {@link LocalDateTime} objects
      * @author amarenco
      *
      */
-    public static class Serializer extends JsonSerializer<LocalDate> {
+    public static class Serializer extends JsonSerializer<LocalDateTime> {
         @Override
-        public void serialize(LocalDate value, JsonGenerator gen, SerializerProvider serializers)
+        public void serialize(LocalDateTime value, JsonGenerator gen, SerializerProvider serializers)
                 throws IOException, JsonProcessingException {
             
             gen.writeString(FORMATTER.print(value));
@@ -41,15 +41,15 @@ public class JsonJodaISODate {
     
     
     /**
-     * Implements the {@link JsonDeserializer} for {@link LocalDate} objects
+     * Implements the {@link JsonDeserializer} for {@link LocalDateTime} objects
      * @author amarenco
      *
      */
-    public static class Deserializer extends JsonDeserializer<LocalDate> {
+    public static class Deserializer extends JsonDeserializer<LocalDateTime> {
         @Override
-        public LocalDate deserialize(JsonParser p, DeserializationContext ctxt)
+        public LocalDateTime deserialize(JsonParser p, DeserializationContext ctxt)
                 throws IOException, JsonProcessingException {
-            return LocalDate.parse(p.getValueAsString(), FORMATTER);
+            return LocalDateTime.parse(p.getValueAsString(), FORMATTER);
         }
     }
 }

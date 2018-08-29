@@ -1,7 +1,8 @@
-package com.apolloframework.serialization;
+package com.apolloframework.serialization.json;
 
 import java.io.IOException;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -15,24 +16,24 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
 /**
- * Provides the {@link JsonSerializer} and {@link JsonDeserializer} for {@link LocalDateTime}
+ * Provides the {@link JsonSerializer} and {@link JsonDeserializer} for {@link DateTime}
  * objects using the {@link ISODateTimeFormat} formatter
  * @author amarenco
  *
  */
-public class JsonJodaISODateTime {
+public class JsonJodaISODateTimeNoMillis {
     
     /** Default formatter for serialization/deserialization */
-    private static final DateTimeFormatter FORMATTER = ISODateTimeFormat.dateTime();
+    private static final DateTimeFormatter FORMATTER = ISODateTimeFormat.dateTimeNoMillis();
     
     /**
-     * Implements the {@link JsonSerializer} for {@link LocalDateTime} objects
+     * Implements the {@link JsonSerializer} for {@link DateTime} objects
      * @author amarenco
      *
      */
-    public static class Serializer extends JsonSerializer<LocalDateTime> {
+    public static class Serializer extends JsonSerializer<DateTime> {
         @Override
-        public void serialize(LocalDateTime value, JsonGenerator gen, SerializerProvider serializers)
+        public void serialize(DateTime value, JsonGenerator gen, SerializerProvider serializers)
                 throws IOException, JsonProcessingException {
             
             gen.writeString(FORMATTER.print(value));
@@ -45,11 +46,11 @@ public class JsonJodaISODateTime {
      * @author amarenco
      *
      */
-    public static class Deserializer extends JsonDeserializer<LocalDateTime> {
+    public static class Deserializer extends JsonDeserializer<DateTime> {
         @Override
-        public LocalDateTime deserialize(JsonParser p, DeserializationContext ctxt)
+        public DateTime deserialize(JsonParser p, DeserializationContext ctxt)
                 throws IOException, JsonProcessingException {
-            return LocalDateTime.parse(p.getValueAsString(), FORMATTER);
+            return DateTime.parse(p.getValueAsString(), FORMATTER);
         }
     }
 }

@@ -100,21 +100,6 @@ public abstract class AbstractJPARepository<T, ID extends Serializable> implemen
     
     
     
-    @Override
-    public void delete(Iterable<? extends T> entities) {
-        throw new UnsupportedOperationException("Can't delete multiple entities");
-    }
-    
-    
-    
-
-    @Override
-    public void deleteAll() {
-        throw new UnsupportedOperationException("Can't delete all entities");
-    }
-    
-    
-    
     
     @Override
     public boolean exists(ID id) {
@@ -236,10 +221,9 @@ public abstract class AbstractJPARepository<T, ID extends Serializable> implemen
      * @return all entities of the type with the given IDs sorted by the given options
      */
     public Iterable<T> findAll(Iterable<ID> ids, Sort sort) {
-        FilterBuilder filters = new FilterBuilder(Filters.in("id", ids));
         return this.findAll(
                 new PageRequest(0, Integer.MAX_VALUE, sort),
-                filters).getContent();
+                Filters.in("id", ids).toBuilder()).getContent();
     }
     
     
