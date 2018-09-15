@@ -1,6 +1,8 @@
 package com.apolloframework.dataaccess;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -10,6 +12,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
 
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.convert.ConversionService;
@@ -63,6 +66,43 @@ public abstract class AbstractJPARepository<T, ID extends Serializable> implemen
         return new CloseableEntityManager(entityManagerFactory.createEntityManager());
     }
     
+    @Override
+    public <S extends T> S save(S entity) {
+        try(CloseableEntityManager entityManager = this.createEntityManager()) {
+            entityManager.unwrap(Session.class).save(entity);
+        }
+        
+        return entity;
+    }
+    
+    
+    @Override
+    public <S extends T> Iterable<S> save(Iterable<S> entities) {
+        List<S> result = new ArrayList<>();
+        entities.forEach(e -> result.add(save(e)));
+        
+        return result;
+    }
+    
+    
+    @Override
+    public void delete(T entity) {
+        try(CloseableEntityManager entityManager = this.createEntityManager()) {
+            entityManager.remove(entity);
+        }
+    }
+    
+    
+    @Override
+    public void delete(ID id) {
+        delete(this.findOne(id));
+    }
+    
+    
+    @Override
+    public void delete(Iterable<? extends T> entities) {
+        entities.forEach(e -> delete(e));
+    }
     
     
     @Override

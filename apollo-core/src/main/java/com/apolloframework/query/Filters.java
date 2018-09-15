@@ -158,6 +158,28 @@ public abstract class Filters {
 
 
     /**
+     * Creates a <code>type(entity) = clazzType</code> filter
+     * @param clazzType the type of the filter
+     * @return the filter criteria object
+     */
+    public static FilterCriteria type(Class<?> clazzType) {
+        return new TypeFilterCriteria(clazzType);
+    }
+
+
+
+    /**
+     * Creates a <code>type(entity) != clazzType</code> filter
+     * @param clazzType the type of the filter
+     * @return the filter criteria object
+     */
+    public static FilterCriteria notType(Class<?> clazzType) {
+        return new TypeFilterCriteria(clazzType, true);
+    }
+
+
+
+    /**
      * Creates a <code>fieldName in value</code> filter
      * @param fieldName the name of the field
      * @param values the values of the filter

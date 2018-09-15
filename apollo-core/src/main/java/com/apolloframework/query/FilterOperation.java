@@ -5,5 +5,7 @@ public enum FilterOperation {
     NOT_EQUALS,
     NULL,
     NOT_NULL,
-    IN
+    IN,
+    TYPE,
+    NOT_TYPE
 }

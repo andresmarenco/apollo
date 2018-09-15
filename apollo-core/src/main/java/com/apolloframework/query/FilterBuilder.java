@@ -126,7 +126,9 @@ public class FilterBuilder {
          */
         public Path<?> findPath(BaseFilterCriteria criteria) {
             Path<?> path;
-            if(StringUtils.isBlank(criteria.getJoinName())) {
+            if(StringUtils.isBlank(criteria.getFieldName())) {
+                path = root;
+            } else if(StringUtils.isBlank(criteria.getJoinName())) {
                 path = root.get(criteria.getFieldName());
             } else {
                 JoinType joinType = joinMap.get(criteria.getJoinName());
