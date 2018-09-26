@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
@@ -69,7 +70,9 @@ public abstract class AbstractJPARepository<T, ID extends Serializable> implemen
     @Override
     public <S extends T> S save(S entity) {
         try(CloseableEntityManager entityManager = this.createEntityManager()) {
-            entityManager.unwrap(Session.class).save(entity);
+            entityManager.getTransaction().begin();
+            entityManager.persist(entity);
+            entityManager.getTransaction().commit();
         }
         
         return entity;
@@ -88,7 +91,9 @@ public abstract class AbstractJPARepository<T, ID extends Serializable> implemen
     @Override
     public void delete(T entity) {
         try(CloseableEntityManager entityManager = this.createEntityManager()) {
-            entityManager.remove(entity);
+            Session session = entityManager.unwrap(Session.class);
+            session.delete(session.contains(entity) ? entity : session.merge(entity));
+            session.flush();
         }
     }
     
@@ -102,6 +107,30 @@ public abstract class AbstractJPARepository<T, ID extends Serializable> implemen
     @Override
     public void delete(Iterable<? extends T> entities) {
         entities.forEach(e -> delete(e));
+    }
+    
+    
+    /**
+     * Deletes all the entities that matches the given filters
+     * @param filters the filters to apply
+     */
+    public void delete(FilterBuilder filters) {
+        try(CloseableEntityManager entityManager = createEntityManager())
+        {
+            entityManager.getTransaction().begin();
+            
+            CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+            CriteriaDelete<T> cd = criteriaBuilder.createCriteriaDelete(repositoryType);
+            Root<T> root = cd.from(repositoryType);
+            
+            if(filters != null) {
+                cd.where(filters.convertToPredicate(criteriaBuilder, root));
+            }
+            
+            entityManager.createQuery(cd).executeUpdate();
+            
+            entityManager.getTransaction().commit();
+        }
     }
     
     
