@@ -22,7 +22,7 @@ public class DateTimeType implements UserType {
 
     @Override
     public int[] sqlTypes() {
-        return new int[] { Types.DATE };
+        return new int[] { Types.TIMESTAMP };
     }
 
     @Override
