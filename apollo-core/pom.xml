@@ -4,7 +4,7 @@
 
   <groupId>com.apolloframework</groupId>
   <artifactId>apollo-core</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <packaging>jar</packaging>
 
   <name>Apollo Framework Core</name>
@@ -17,12 +17,12 @@
     <apache.commons.lang.version>3.4</apache.commons.lang.version>
     
     <!-- Spring -->
-    <spring.version>4.3.2.RELEASE</spring.version>
-    <spring.data.version>1.10.3.RELEASE</spring.data.version>
-    <spring.security.version>4.1.3.RELEASE</spring.security.version>
+    <spring.version>4.3.20.RELEASE</spring.version>
+    <spring.data.version>1.11.15.RELEASE</spring.data.version>
+    <spring.security.version>4.2.9.RELEASE</spring.security.version>
     
     <!-- Hibernate/Persistence -->
-    <hibernate.version>4.3.11.Final</hibernate.version>
+    <hibernate.version>5.0.12.Final</hibernate.version>
     <hibernate.jpa.version>1.0.0.Final</hibernate.jpa.version>
     
     <!-- Security -->
@@ -35,7 +35,7 @@
     <quartz.version>2.3.0</quartz.version>
     
     <!-- JSON -->
-    <jackson.version>2.8.3</jackson.version>
+    <jackson.version>2.9.7</jackson.version>
     
     <!-- Testing -->
     <junit.version>4.12</junit.version>
